@@ -1,0 +1,39 @@
+A=imread('C:\Users\Tang\Desktop\冈萨雷斯数字图像处理MATLAB版图片(二)\dipum_images_ch10\Fig1004(a)(wirebond_mask).tif');
+F1=[-1 -1 -1;2 2 2;-1 -1 -1];%0度，水平Sobel模板
+g1=sob(A,F1);%得水平边缘
+
+F2=[-1 0 1;-2 0 2;-1 0 1];%90度，竖直Sobel模板
+g2=sob(A,F2);%得竖直边缘
+
+F3=[0 1 2;-1 0 1;-2 -1 0];%45度，45度Sobel模板
+g3=sob(A,F3);%得45度边缘
+
+F4=[-2 -1 0;-1 0 1;0 1 2];%135度，135度Sobel模板
+g4=sob(A,F4);%得135度边缘
+
+g=g1+g2+g3+g4;
+
+figure,imshow(g,[]);
+
+function [g]=sob(A,F)
+w=1;%3x3的模板
+A=tofloat(A);%输出浮点图像
+dim = size(A);%图片大小486x486
+B = zeros(dim);%创建一个和原图像一样大小的0矩阵
+
+for i = 1:dim(1)
+   for j = 1:dim(2)
+         % 提取局部区域   
+         iMin = max(i-w,1);
+         iMax = min(i+w,dim(1));
+         jMin = max(j-w,1);
+         jMax = min(j+w,dim(2));
+         %定义当前所作用的区域为(iMin:iMax,jMin:jMax)
+         I = A(iMin:iMax,jMin:jMax);%提取该区域的源图像值赋给I
+         G=F((iMin:iMax)-i+w+1,(jMin:jMax)-j+w+1);%提取某一像素点的模板
+         B(i,j) = sum(G(:).*I(:));%卷积
+   end
+end
+g=abs(B);%取绝对值，得水平边缘
+end
+
